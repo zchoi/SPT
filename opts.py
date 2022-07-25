@@ -22,7 +22,7 @@ def parse_opt():
     parser.add_argument(
         '--base_checkpoint_path',
         type=str,
-        default='./experiments_20frame_TRMencoder_SP_C8_SR_0.4',
+        default='./experiments_20frame_TRMencoder_SP_C5_SR_0.2',
         help='result folder',
     )
     parser.add_argument('-df', '--default', default=True, action='store_true')
