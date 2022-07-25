@@ -28,13 +28,17 @@ def get_encoder(opt, input_size):
         supported_modules=Encoder.__all__,
         key_name='Encoder'
     )
+    # return Encoder.Transformer
     return getattr(Encoder, opt['encoder'], None)(opt)
 
 
 def get_joint_representation_learner(opt):
     if opt.get('no_joint_representation_learner', False):
         return None
-    feats_size = [opt['dim_hidden']] * len(opt['modality'])
+    if not opt['cluster']:
+        feats_size = [opt['dim_hidden']] * (len(opt['modality']) - 1)
+    else:
+        feats_size = [opt['dim_hidden']] * (len(opt['modality']))
     return Joint_Representaion_Learner(feats_size, opt)
 
 
@@ -73,10 +77,10 @@ def get_model(opt):
     for char in modality:
         assert char in mapping.keys()
         input_size.append(mapping[char])
-
+    
     preEncoder, input_size = get_preEncoder(opt, input_size)
     encoder = get_encoder(opt, input_size)
-    joint_representation_learner = get_joint_representation_learner(opt)
+    joint_representation_learner = None #get_joint_representation_learner(opt)
     have_auxiliary_tasks = sum([(1 if item not in ['lang'] else 0) for item in opt['crit']])
     auxiliary_task_predictor = get_auxiliary_task_predictor(opt)
     decoder = get_decoder(opt)

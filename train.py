@@ -1,11 +1,14 @@
 import json
 import os
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import opts as opts
 import torch
 from misc.utils import set_seed
 from models import get_model
 from misc.run import train_network_all
 import warnings
+
 warnings.filterwarnings('ignore')
 import random
 import pickle
@@ -20,7 +23,11 @@ def get_dir(opt, key, mid_path=''):
         if not opt[key][0]:
             return ''
         for i in range(len(opt[key])):
-            res.append(os.path.join(Constants.base_data_path, opt['dataset'], mid_path, opt[key][i]))
+            res.append(
+                os.path.join(
+                    Constants.base_data_path, opt['dataset'], mid_path, opt[key][i]
+                )
+            )
     else:
         res = os.path.join(Constants.base_data_path, opt['dataset'], mid_path, opt[key])
     return res
@@ -28,20 +35,19 @@ def get_dir(opt, key, mid_path=''):
 
 def where_to_save_model(opt):
     return os.path.join(
-        Constants.base_checkpoint_path,
-        opt['dataset'],
-        opt['method'],
-        opt['scope']
+        opt['base_checkpoint_path'], opt['dataset'], opt['method'], opt['scope']
     )
 
 
 def print_information(opt, model):
-    print(model)
+    # print(model)
     print('| model {}'.format(opt['method']))
-    print('| num. model params: {} (num. trained: {})'.format(
-        sum(p.numel() for p in model.parameters()),
-        sum(p.numel() for p in model.parameters() if p.requires_grad),
-    ))
+    print(
+        '| num. model params: {} (num. trained: {})'.format(
+            sum(p.numel() for p in model.parameters()),
+            sum(p.numel() for p in model.parameters() if p.requires_grad),
+        )
+    )
     print('dataloader random type: %s' % opt.get('random_type', 'segment_random'))
     print('k best model: %d' % opt.get('k_best_model', 10))
     print('modality: %s' % opt['modality'])
@@ -64,14 +70,21 @@ def main(opt):
         os.makedirs(opt["checkpoint_path"])
 
     # get full paths to load features / corpora
-    for key in ['feats_a_name', 'feats_m_name', 'feats_i_name', 'feats_o_name', 'feats_t_name'] \
-        + ['reference_name', 'info_corpus_name']:
+    for key in [
+        'feats_a_name',
+        'feats_m_name',
+        'feats_i_name',
+        'feats_o_name',
+        'feats_t_name',
+    ] + ['reference_name', 'info_corpus_name']:
         opt[key[:-5]] = get_dir(opt, key, 'feats' if 'feats' in key else '')
         opt.pop(key)
 
     # the assignment of 'vocab_size' should be done before defining the model
-    opt['vocab_size'] = len(pickle.load(open(opt['info_corpus'], 'rb'))['info']['itow'].keys())
-    
+    opt['vocab_size'] = len(
+        pickle.load(open(opt['info_corpus'], 'rb'))['info']['itow'].keys()
+    )
+
     # save training settings
     opt_json = os.path.join(opt["checkpoint_path"], 'opt_info.json')
     with open(opt_json, 'w') as f:
@@ -93,4 +106,3 @@ if __name__ == '__main__':
     opt = opts.parse_opt()
     opt = vars(opt)
     main(opt)
-

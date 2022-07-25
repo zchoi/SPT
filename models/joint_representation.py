@@ -24,7 +24,7 @@ class Joint_Representaion_Learner(nn.Module):
     def forward(self, encoder_outputs, encoder_hiddens):
         if not isinstance(encoder_hiddens, list):
             encoder_hiddens = [encoder_hiddens]
-        encoder_hiddens = torch.stack(encoder_hiddens, dim=0).mean(0)
+        encoder_hiddens = torch.stack(encoder_hiddens, dim=0).mean(0) # [2, 64, 512] -》 [64, 512]
 
         if self.fusion == 'none':
             if isinstance(encoder_outputs, list):
@@ -37,17 +37,17 @@ class Joint_Representaion_Learner(nn.Module):
         if self.fusion == 'addition':
             encoder_outputs = torch.stack(encoder_outputs, dim=0).mean(0)
 
-        if len(self.norm_list):
-            assert len(encoder_outputs) == len(self.norm_list)
-            for i in range(len(encoder_outputs)):
-                if self.is_bn:
-                    batch_size, seq_len, _ = encoder_outputs[i].shape
-                    encoder_outputs[i] = self.norm_list[i](encoder_outputs[i].contiguous().view(batch_size * seq_len, -1)).view(batch_size, seq_len, -1)
-                else:
-                    encoder_outputs[i] = self.norm_list[i](encoder_outputs[i])
+        # if len(self.norm_list):
+        #     assert len(encoder_outputs) == len(self.norm_list)
+        #     for i in range(len(encoder_outputs)):
+        #         if self.is_bn:
+        #             batch_size, seq_len, _ = encoder_outputs[i].shape
+        #             encoder_outputs[i] = self.norm_list[i](encoder_outputs[i].contiguous().view(batch_size * seq_len, -1)).view(batch_size, seq_len, -1)
+        #         else:
+        #             encoder_outputs[i] = self.norm_list[i](encoder_outputs[i])
 
         if self.fusion == 'temporal_concat':
             assert isinstance(encoder_outputs, list)
             encoder_outputs = torch.cat(encoder_outputs, dim=1)
-        
+            
         return encoder_outputs, encoder_hiddens

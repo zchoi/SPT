@@ -68,7 +68,7 @@ class Translator(object):
             inputs_for_decoder[key] = self.auto_collect_active_part(inputs_for_decoder[key], *args)
 
         active_inst_idx_to_position_map = self.get_inst_idx_to_tensor_position_map(active_inst_idx_list)
-
+        
         return inputs_for_decoder, active_inst_idx_to_position_map
 
     def collect_active_inst_idx_list(self, inst_beams, word_prob, inst_idx_to_position_map):

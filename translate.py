@@ -10,7 +10,6 @@ from tensorboardX import SummaryWriter
 import shutil
 from misc.crit import get_criterion_during_evaluation
 
-
 def prepare_collect_config(option, opt):
     if not os.path.exists(opt.collect_path):
         os.makedirs(opt.collect_path)
@@ -44,18 +43,20 @@ def prepare_collect_config(option, opt):
 def main():
     '''Main Function'''
     parser = argparse.ArgumentParser(description='translate.py')
-    parser.add_argument('-df', '--default', default=False, action='store_true')
+    parser.add_argument('-df', '--default', default=True, action='store_true')
     parser.add_argument('-method', '--method', default='ARB', type=str)
-    parser.add_argument('-dataset', '--dataset', default='MSRVTT', type=str)
+    parser.add_argument('-dataset', '--dataset', default='MSVD', type=str)
     parser.add_argument('--default_model_name', default='best.pth.tar', type=str)
     parser.add_argument('-scope', '--scope', default='', type=str)
     parser.add_argument('-record', '--record', default=False, action='store_true')
     parser.add_argument('-field', '--field', nargs='+', type=str, default=['seed'])
     parser.add_argument('-val_and_test', '--val_and_test', default=False, action='store_true')
+    parser.add_argument('--cluster', type=int, default=False, help="baseline | baseline+cluster")
+    parser.add_argument('--base_checkpoint_path', type=str, default='./experiments_20frame_TRMencoder_SP', help='result folder')
 
     parser.add_argument('-model_path', '--model_path', type=str)
     parser.add_argument('-teacher_path', '--teacher_path', type=str)
-
+    
     parser.add_argument('-bs', '--beam_size', type=int, default=5, help='Beam size')
     parser.add_argument('-ba', '--beam_alpha', type=float, default=1.0)
     parser.add_argument('-topk', '--topk', type=int, default=1)
@@ -97,7 +98,7 @@ def main():
         if opt.dataset.lower() == 'msvd':
             opt.dataset = 'Youtube2Text'
         opt.model_path = os.path.join(
-            Constants.base_checkpoint_path,
+            opt.base_checkpoint_path,
             opt.dataset,
             opt.method,
             opt.scope,
@@ -105,7 +106,7 @@ def main():
         )
         if opt.method in ['NAB', 'NACF']:
             opt.teacher_path = os.path.join(
-                Constants.base_checkpoint_path,
+                opt.base_checkpoint_path,
                 opt.dataset,
                 'ARB',
                 opt.scope,
@@ -120,10 +121,10 @@ def main():
         print('Loading teacher model from %s' % opt.teacher_path)
         teacher_model, teacher_option = load_model_and_opt(opt.teacher_path, device)
         dict_mapping = get_dict_mapping(option, teacher_option)
-
+    print("Load from {}".format(opt.model_path))
     option['reference'] = option['reference'].replace('msvd_refs.pkl', 'refs.pkl')
     option['info_corpus'] = option['info_corpus'].replace('info_corpus_0.pkl', 'info_corpus.pkl')
-
+    print(option)
     if not opt.default:
         _ = option['dataset']
         option.update(vars(opt))
@@ -132,7 +133,7 @@ def main():
         if option['decoding_type'] != 'NARFormer':
             option['topk'] = opt.topk
             option['beam_size'] = 5
-            option['beam_alpha'] = 1.0
+             
         else:
             option['algorithm_print_sent'] = opt.algorithm_print_sent
             option['paradigm'] = opt.paradigm

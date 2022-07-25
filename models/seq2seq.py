@@ -88,7 +88,6 @@ class Seq2Seq(nn.Module):
             lambda x: kwargs.get(x, None),
             ["feats", "tgt_tokens", "category"]
         )
-
         results = self.encode(feats)
         inputs_for_decoder = self.prepare_inputs_for_decoder(results, category)
         hidden_states, embs, *_ = self.decoder(
@@ -108,10 +107,13 @@ class Seq2Seq(nn.Module):
         return results
 
     def forward_ARFormer(self, kwargs):
+        
         feats, tgt_tokens, category = map(
             lambda x: kwargs.get(x, None),
             ["feats", "tgt_tokens", "category"]
         )
+        # torch.Size([64, 8, 2048]) torch.Size([64, 8, 2048]) 2
+        # print(feats[0].size(),feats[0].size(),len(feats))
         decoding_type = kwargs.get('decoding_type', self.opt['decoding_type'])
         pmlm_flag = (decoding_type == 'SelfMask')
         if pmlm_flag:
@@ -120,6 +122,7 @@ class Seq2Seq(nn.Module):
             tgt_tokens = [item[:, :-1] for item in tgt_tokens] if isinstance(tgt_tokens, list) else tgt_tokens[:, :-1]
 
         results = self.encode(feats)
+        # {'category': [64, 1], 'enc_output': [64, 40, 512]}
         inputs_for_decoder = self.prepare_inputs_for_decoder(results, category)
         hidden_states, embs, *_ = self.decoder(
             tgt_seq=tgt_tokens, 

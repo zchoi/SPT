@@ -58,7 +58,6 @@ class EmptyObject(object):
     def __init__(self):
         pass
 
-
 def dict2obj(dict):
     obj = EmptyObject()
     obj.__dict__.update(dict)

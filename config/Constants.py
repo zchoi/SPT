@@ -17,8 +17,8 @@ mapping = {
     'length': ('pred_length', 'tgt_length'),
 }
 
-base_checkpoint_path = './experiments'	# base path to save checkpoints
-base_data_path = '/home/yangbang/VC_data' # base path to load corpora and features
+# base_checkpoint_path = './experiments_20frame_baseline_cat_appmot_TRMencoder'	# base path to save checkpoints
+base_data_path = './data' # base path to load corpora and features
 
 # mapping of nltk pos tags
 pos_tag_mapping = {}

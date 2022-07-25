@@ -92,6 +92,7 @@ def get_loader(opt, mode, print_info=False, specific=-1, **kwargs):
     return DataLoader(
         dataset, 
         batch_size=batch_size, 
+        num_workers=8,
         shuffle=True if mode=='train' else False
     )
 
@@ -125,7 +126,7 @@ def run_eval(
     
     collect_ar_flag = (opt['decoding_type'] == 'ARFormer' and collect_best_candidate_iterative_results)
 
-    for data in tqdm(loader, ncols=150, leave=False):
+    for data in tqdm(loader, ncols=100, leave=False):
         with torch.no_grad():
             encoder_outputs, category, labels = get_forword_results(opt, model, data, device=device, only_data=True, vocab=vocab)
             if crit is not None:
@@ -251,7 +252,7 @@ def run_train(opt, model, crit, optimizer, loader, device, logger=None, epoch=-1
     crit.reset_loss_recorder()
     vocab = loader.dataset.get_vocab()
 
-    for data in tqdm(loader, ncols=150, leave=False):
+    for data in tqdm(loader, ncols=100, leave=False):
         optimizer.zero_grad()
         results = get_forword_results(opt, model, data, device=device, only_data=False, vocab=vocab, **kwargs)
         loss = crit.get_loss(results, epoch=epoch)
@@ -269,6 +270,7 @@ def run_train(opt, model, crit, optimizer, loader, device, logger=None, epoch=-1
     return loss_info[0]
 
 
+
 def train_network_all(opt, model, device, **kwargs):
     if opt.get('load_teacher_weights', False):
         assert opt.get('teacher_path', None) is not None
@@ -283,7 +285,7 @@ def train_network_all(opt, model, device, **kwargs):
     optimizer = get_optimizer(opt, model, summarywriter=summarywriter)
     crit = get_criterion(opt, summarywriter=summarywriter)
     crit_eval = get_criterion_during_evaluation(opt)
-
+    
     if opt.get('with_teacher', False) and opt['method'] in ['NAB', 'NACF']:
         assert opt.get('teacher_path', None) is not None
         teacher_model, _ = load_model_and_opt(opt['teacher_path'], device)
@@ -313,12 +315,12 @@ def train_network_all(opt, model, device, **kwargs):
         )
 
     start_epoch = 0
-    for epoch in tqdm(range(opt['epochs']), ncols=150, leave=False):
+    for epoch in tqdm(range(opt['epochs']), ncols=100, leave=False):
         if epoch < start_epoch: 
-            continue 
+            continue
 
         train_loader.dataset.shuffle()
-
+        
         logger.write_text("epoch %d lr=%g (ss_prob=%g)" % (epoch, optimizer.get_lr(), opt.get('teacher_prob', 1)))
         # training
         train_loss = run_train(opt, model, crit, optimizer, train_loader, device, logger=logger, epoch=epoch)
@@ -351,8 +353,8 @@ def train_network_all(opt, model, device, **kwargs):
         del model
         del optimizer
         torch.cuda.empty_cache()
-        os.system('python translate.py --default --method {} --dataset {} --record --scope {} --field {} --val_and_test --use_ct'.format(
-            opt['method'], opt['dataset'], opt['scope'] if opt['scope'] else '\"\"', ' '.join(opt['field']))
+        os.system('python translate.py --default --method {} --base_checkpoint_path {} --cluster {} --dataset {} --record --scope {} --field {} --val_and_test --use_ct'.format(
+            opt['method'], opt['base_checkpoint_path'], opt['cluster'], opt['dataset'], opt['scope'] if opt['scope'] else '\"\"', ' '.join(opt['field']))
         )
 
     if opt['k_best_model'] > 1:

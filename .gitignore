@@ -1,0 +1,9 @@
+data/*
+experiments_*/*
+*.pyc
+*.v100-6
+*.tar
+coco-caption/*
+*.csv
+*.txt
+*.json
