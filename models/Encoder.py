@@ -201,4 +201,5 @@ class Transformer(nn.Module):
             # print("****************running baseline model...****************")
             encoder_ouputs = [self.appmot_seq(appmot)]
             encoder_hiddens = [item.mean(1) for item in encoder_ouputs]
+        
         return encoder_ouputs, encoder_hiddens
