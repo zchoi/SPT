@@ -7,3 +7,4 @@ coco-caption/*
 *.csv
 *.txt
 *.json
+exp_*/*
