@@ -18,7 +18,7 @@ This is the code implementation of the submitted paper "SPT: Spatial Pyramid Tra
 The canonical approaches to image captioning tend to vision transformers to learn sentence generation. These methods typically treat visually representative modeling of an image as a sequential problem (*i.e.*, flatting image patches), which demonstrates impressive levels of performance. However, the spatial semantic loss for flattened grid features of images has not received much attention to date. Besides, the routine of the current transformer models tend to maintain a full-length patch sequence during training and inference, which lacks hierarchal representation and makes it difficult to generate sentences with multiple levels of granularity. To this end, we propose a Spatially Pyramidal Transformer (SPT), which progressively pools vision patches to shrink sequence length for caption generation with varying graininess among image grids.
 
 <p align="center">
-    <img src=imgs/framework.png><br>
+    <img src=framework.png><br>
     <span><b>Figure 1. Overview of the Spatial Pyramid Transformer (SPT) for Image Captioning.</b></span>
 </p>
 
