@@ -5,12 +5,12 @@ SPT: Spatial Pyramid Transformer for Image Captioning
 </b>
 </h1>
 <h4>
-<b>
+<!-- <b>
 <a href="https://github.com/zchoi">Haonan Zhang</a>, <a href="https://ppengzeng.github.io/">Pengpeng Zeng</a>, <a href="https://cfm.uestc.edu.cn/~songjingkuan/">Jingkuan Song</a>, <a href="https://lianligao.github.io/">Lianli Gao</a>
-</b>
+</b> -->
 </h4>
 
-[Paper] | **TCSVT 2023 submission**
+[Paper] | **Paper Submission**
 </div>
 This is the code implementation of the submitted paper "SPT: Spatial Pyramid Transformer for Image Captioning", the checkpoint and feature will be released soon.
 
