@@ -10,7 +10,7 @@ SPT: Spatial Pyramid Transformer for Image Captioning
 </b> -->
 </h4>
 
-[Paper] | **Paper Submission**
+[Paper] | **Paper Submission** 
 </div>
 This is the code implementation of the submitted paper "SPT: Spatial Pyramid Transformer for Image Captioning", the checkpoint and feature will be released soon.
 
