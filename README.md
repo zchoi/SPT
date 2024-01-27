@@ -33,4 +33,5 @@ The canonical approaches to image captioning tend to vision transformers to lear
 </p> -->
 
 ## Dataset and Training Details 
-> Note: For the data preparation, feature download, and training details, please refer to this [Repo](https://github.com/zchoi/S2-Transformer).
+> [!NOTE]
+> For the data preparation, feature download, and training details, please refer to this [Repo](https://github.com/zchoi/S2-Transformer).
